@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="th" class="h-full scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eco-critical | ห้องเรียนภูมิศาสตร์และมลพิษทางอากาศ</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts (Prompt & Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Prompt', 'Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        emerald: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                            950: '#022c22',
+                        },
+                        amber: {
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        @keyframes pulse-subtle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .animate-pulse-subtle {
+            animation: pulse-subtle 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col antialiased selection:bg-emerald-500 selection:text-white">
+
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-40 w-full glass-panel border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Logo & Title -->
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('overview')">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20">
+                    <i data-lucide="wind" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-2xl font-bold tracking-tight text-slate-900">Eco<span class="text-emerald-600">-critical</span></span>
+                        <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2.5 py-0.5 rounded-full border border-emerald-200">ห้องเรียนภูมิศาสตร์</span>
+                    </div>
+                    <p class="text-xs text-slate-500 font-medium hidden sm:block">แหล่งเรียนรู้มลพิษทางอากาศ PM2.5 & การคิดวิพากษ์ทางสิ่งแวดล้อม</p>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="hidden md:flex items-center space-x-1 lg:space-x-2">
+                <button onclick="switchTab('overview')" id="nav-overview" class="nav-btn px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 flex items-center space-x-2">
+                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                    <span>ภาพรวมห้องเรียน</span>
+                </button>
+                <button onclick="switchTab('cases')" id="nav-cases" class="nav-btn px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 flex items-center space-x-2">
+                    <i data-lucide="book-open-check" class="w-4 h-4"></i>
+                    <span>กรณีศึกษา (Archive)</span>
+                </button>
+                <button onclick="switchTab('critical')" id="nav-critical" class="nav-btn px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 flex items-center space-x-2">
+                    <i data-lucide="brain-circuit" class="w-4 h-4"></i>
+                    <span>คลังคำถามคิดวิเคราะห์</span>
+                </button>
+                <button onclick="switchTab('chatbot')" id="nav-chatbot" class="nav-btn px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 flex items-center space-x-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200/60">
+                    <i data-lucide="bot" class="w-4 h-4 text-emerald-600"></i>
+                    <span class="font-semibold">Eco Bot AI</span>
+                </button>
+            </nav>
+
+            <!-- Mobile Menu Toggle Button -->
+            <div class="flex items-center md:hidden">
+                <button id="mobile-menu-btn" class="p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobile-menu" class="hidden md:hidden border-t border-slate-200 bg-white/95 px-4 pt-2 pb-4 space-y-2">
+            <button onclick="switchTab('overview')" class="w-full text-left px-3 py-2 rounded-lg font-medium text-slate-700 hover:bg-emerald-50 flex items-center space-x-2">
+                <i data-lucide="layout-dashboard" class="w-5 h-5 text-emerald-600"></i>
+                <span>ภาพรวมห้องเรียน</span>
+            </button>
+            <button onclick="switchTab('cases')" class="w-full text-left px-3 py-2 rounded-lg font-medium text-slate-700 hover:bg-emerald-50 flex items-center space-x-2">
+                <i data-lucide="book-open-check" class="w-5 h-5 text-emerald-600"></i>
+                <span>กรณีศึกษา (Archive)</span>
+            </button>
+            <button onclick="switchTab('critical')" class="w-full text-left px-3 py-2 rounded-lg font-medium text-slate-700 hover:bg-emerald-50 flex items-center space-x-2">
+                <i data-lucide="brain-circuit" class="w-5 h-5 text-emerald-600"></i>
+                <span>คลังคำถามคิดวิเคราะห์</span>
+            </button>
+            <button onclick="switchTab('chatbot')" class="w-full text-left px-3 py-2 rounded-lg font-medium text-emerald-700 bg-emerald-50 flex items-center space-x-2">
+                <i data-lucide="bot" class="w-5 h-5 text-emerald-600"></i>
+                <span>Eco Bot AI Chatbot</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- SECTION 1: OVERVIEW & VIRTUAL CLASSROOM HUB -->
+        <section id="tab-overview" class="space-y-8 animate-fadeIn">
+            <!-- Hero Banner -->
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 text-white p-8 sm:p-12 shadow-2xl">
+                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1534088568595-a066f410bcda?auto=format&fit=crop&w=1600&q=80')] bg-cover bg-center opacity-15 mix-blend-overlay"></div>
+                <div class="relative z-10 max-w-3xl space-y-4">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                        <i data-lucide="globe" class="w-3.5 h-3.5 mr-1.5"></i> รายวิชาภูมิศาสตร์และสิ่งแวดล้อมศึกษา
+                    </span>
+                    <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">
+                        ถอดบทเรียนมลพิษทางอากาศ <br class="hidden sm:inline"/>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-teal-200">สร้างทักษะการคิดวิพากษ์ (Critical Thinking)</span>
+                    </h1>
+                    <p class="text-slate-300 text-base sm:text-lg font-light leading-relaxed">
+                        ร่วมสำรวจกรณีศึกษาวิกฤต PM2.5 และหมอกควันพิษตั้งแต่อดีตจนถึงปัจจุบัน ทั้งในประเทศไทยและระดับโลก เรียนรู้ปัจจัยทางภูมิศาสตร์ ผังเมือง สภาพอากาศ และระบบสังคมพร้อมพัฒนาทัศนะการคิดเชิงระบบ
+                    </p>
+                    <div class="pt-4 flex flex-wrap gap-4">
+                        <button onclick="switchTab('cases')" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-semibold px-6 py-3 rounded-xl transition shadow-lg shadow-emerald-500/25 flex items-center space-x-2">
+                            <span>สำรวจกรณีศึกษาทั่วโลก</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="switchTab('chatbot')" class="bg-white/10 hover:bg-white/20 text-white font-medium px-6 py-3 rounded-xl backdrop-blur border border-white/20 transition flex items-center space-x-2">
+                            <i data-lucide="bot" class="w-5 h-5 text-emerald-400"></i>
+                            <span>พูดคุยกับ Eco Bot AI</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Geographic Learning Framework Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Card 1 -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 hover:shadow-md transition">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-4">
+                        <i data-lucide="mountain" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-2">1. ภูมิประเทศ & อากาศวิทยา</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        ทำความเข้าใจอิทธิพลของแอ่งกระทะ ทิศทางลม ปรากฏการณ์ลักขณาอากาศ (Temperature Inversion) ที่ขังมลพิษพิษไว้ในระดับพื้นดิน
+                    </p>
+                </div>
+                <!-- Card 2 -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 hover:shadow-md transition">
+                    <div class="w-12 h-12 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center mb-4">
+                        <i data-lucide="building-2" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-2">2. กิจกรรมมนุษย์ & ผังเมือง</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        เจาะลึกการใช้ประโยชน์ที่ดิน การเกษตรเชิงเดี่ยว การเผาในป่า การจราจรในเมืองใหญ่ และนโยบายอุตสาหกรรม
+                    </p>
+                </div>
+                <!-- Card 3 -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 hover:shadow-md transition">
+                    <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center mb-4">
+                        <i data-lucide="scale" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-2">3. ความยุติธรรมทางสิ่งแวดล้อม</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed">
+                        ตั้งคำถามวิพากษ์ถึงความเหลื่อมล้ำ ผู้ได้รับผลกระทบ มลพิษข้ามแดน และธรรมาภิบาลทางนโยบายสาธารณะ
+                    </p>
+                </div>
+            </div>
+
+            <!-- Featured Case Preview Carousel / Highlight -->
+            <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-100 pb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900 flex items-center space-x-2">
+                            <i data-lucide="sparkles" class="w-5 h-5 text-amber-500"></i>
+                            <span>กรณีศึกษาแนะนำประจำบทเรียน (Featured Case)</span>
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1">บทเรียนสำคัญจากเหตุการณ์ในอดีตสู่ปัญหากรณีศึกษาไทยในปัจจุบัน</p>
+                    </div>
+                    <button onclick="switchTab('cases')" class="mt-2 sm:mt-0 text-emerald-600 hover:text-emerald-700 text-sm font-semibold flex items-center space-x-1">
+                        <span>ดูทั้งหมด (5 กรณีศึกษา)</span>
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
+                    <div class="relative h-64 rounded-2xl overflow-hidden shadow-inner">
+                        <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1000&q=80" alt="Northern Thailand Pollution" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent p-6 flex flex-col justify-end">
+                            <span class="bg-emerald-500 text-slate-950 text-xs font-bold px-2 py-1 rounded w-fit mb-2">ประเทศไทย | ปัจจุบัน</span>
+                            <h3 class="text-xl font-bold text-white">วิกฤต PM2.5 ภาคเหนือ & แอ่งกระทะเชียงใหม่</h3>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="space-y-2">
+                            <span class="text-xs font-semibold uppercase tracking-wider text-emerald-600">วิเคราะห์บริบทเชิงพื้นที่</span>
+                            <h4 class="text-lg font-bold text-slate-800">ทำไมพื้นที่ภาคเหนือจึงติดดักมลพิษฝุ่นควันช่วง มี.ค. - เม.ย. ของทุกปี?</h4>
+                            <p class="text-sm text-slate-600 leading-relaxed">
+                                ผสมผสานจากสภาพภูมิประเทศที่เป็นเทือกเขาสูงล้อมรอบแอ่งกระทะ สภาพอากาศนิ่ง และปรากฏการณ์ Temperature Inversion ร่วมกับการเผาในพื้นที่เกษตรกรรม-ป่าไม้ และหมอกควันข้ามแดนจากประเทศเพื่อนบ้าน
+                            </p>
+                        </div>
+                        <div class="flex items-center space-x-4 pt-2">
+                            <button onclick="openCaseModal('chiangmai')" class="bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium px-5 py-2.5 rounded-xl transition flex items-center space-x-2">
+                                <i data-lucide="file-text" class="w-4 h-4"></i>
+                                <span>อ่านฉบับเต็ม & คำถามคิดวิพากษ์</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: CASE STUDIES ARCHIVE -->
+        <section id="tab-cases" class="hidden space-y-8 animate-fadeIn">
+            <!-- Header & Filter Control Bar -->
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">คลังกรณีศึกษามลพิษทางอากาศและ PM2.5</h2>
+                    <p class="text-slate-500 text-sm mt-1">รวบรวมเหตุการณ์วิกฤตทางสิ่งแวดล้อมตั้งแต่อดีตจนถึงปัจจุบัน เพื่อวิเคราะห์รากเหง้าเชิงภูมิศาสตร์</p>
+                </div>
+
+                <!-- Filters -->
+                <div class="flex flex-wrap gap-3 pt-2 border-t border-slate-100">
+                    <button onclick="filterCases('all')" class="filter-btn active bg-emerald-600 text-white text-xs sm:text-sm font-medium px-4 py-2 rounded-xl transition">
+                        ทั้งหมด
+                    </button>
+                    <button onclick="filterCases('thailand')" class="filter-btn bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-medium px-4 py-2 rounded-xl transition">
+                        🇹🇭 ประเทศไทย
+                    </button>
+                    <button onclick="filterCases('global')" class="filter-btn bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-medium px-4 py-2 rounded-xl transition">
+                        🌐 ต่างประเทศ (Global)
+                    </button>
+                    <button onclick="filterCases('historical')" class="filter-btn bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-medium px-4 py-2 rounded-xl transition">
+                        📜 บทเรียนในอดีต
+                    </button>
+                    <button onclick="filterCases('modern')" class="filter-btn bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-medium px-4 py-2 rounded-xl transition">
+                        🔥 สถานการณ์ร่วมสมัย
+                    </button>
+                </div>
+            </div>
+
+            <!-- Case Cards Grid -->
+            <div id="cases-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Cases dynamically populated by JS -->
+            </div>
+        </section>
+
+        <!-- SECTION 3: CRITICAL THINKING HUB -->
+        <section id="tab-critical" class="hidden space-y-8 animate-fadeIn">
+            <!-- Header -->
+            <div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">
+                        <i data-lucide="brain" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-900">คลังกิจกรรมพัฒนาทักษะการคิดวิพากษ์ (Critical Environmental Thinking Framework)</h2>
+                        <p class="text-slate-500 text-sm">เครื่องมือฝึกกระบวนการคิดวิพากษ์ทางสิ่งแวดล้อม 4 มิติ สำหรับนักเรียนรายวิชาภูมิศาสตร์</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Framework Tabs -->
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <!-- Framework Nav -->
+                <div class="lg:col-span-1 space-y-2">
+                    <button onclick="selectFramework(1)" id="fw-btn-1" class="fw-btn w-full text-left p-4 rounded-2xl border transition flex items-center space-x-3 bg-emerald-50 border-emerald-500 text-emerald-900 font-semibold shadow-sm">
+                        <span class="w-7 h-7 rounded-full bg-emerald-600 text-white text-xs flex items-center justify-center font-bold">1</span>
+                        <span class="text-sm">ตั้งคำถาม & ท้าทายความเชื่อ</span>
+                    </button>
+                    <button onclick="selectFramework(2)" id="fw-btn-2" class="fw-btn w-full text-left p-4 rounded-2xl border border-slate-200 hover:border-slate-300 text-slate-700 transition flex items-center space-x-3 font-medium">
+                        <span class="w-7 h-7 rounded-full bg-slate-200 text-slate-700 text-xs flex items-center justify-center font-bold">2</span>
+                        <span class="text-sm">วิเคราะห์รากเหง้าเชิงระบบ</span>
+                    </button>
+                    <button onclick="selectFramework(3)" id="fw-btn-3" class="fw-btn w-full text-left p-4 rounded-2xl border border-slate-200 hover:border-slate-300 text-slate-700 transition flex items-center space-x-3 font-medium">
+                        <span class="w-7 h-7 rounded-full bg-slate-200 text-slate-700 text-xs flex items-center justify-center font-bold">3</span>
+                        <span class="text-sm">การคิดเชิงพื้นที่ & มลพิษข้ามแดน</span>
+                    </button>
+                    <button onclick="selectFramework(4)" id="fw-btn-4" class="fw-btn w-full text-left p-4 rounded-2xl border border-slate-200 hover:border-slate-300 text-slate-700 transition flex items-center space-x-3 font-medium">
+                        <span class="w-7 h-7 rounded-full bg-slate-200 text-slate-700 text-xs flex items-center justify-center font-bold">4</span>
+                        <span class="text-sm">ประเมินนโยบาย & Trade-offs</span>
+                    </button>
+                </div>
+
+                <!-- Framework Active Display -->
+                <div class="lg:col-span-3 bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6" id="framework-content">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: AI CHATBOT (ECO BOT) -->
+        <section id="tab-chatbot" class="hidden h-[78vh] flex flex-col bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden animate-fadeIn">
+            <!-- Chatbot Header -->
+            <div class="p-4 sm:p-6 bg-gradient-to-r from-emerald-900 to-teal-900 text-white flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="relative">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-500 text-slate-950 flex items-center justify-center font-bold text-xl shadow-md">
+                            <i data-lucide="bot" class="w-7 h-7"></i>
+                        </div>
+                        <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-400 border-2 border-slate-900 rounded-full"></span>
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <h3 class="font-bold text-lg">Eco bot AI</h3>
+                            <span class="bg-emerald-500/20 text-emerald-300 text-xs px-2 py-0.5 rounded border border-emerald-500/30">ผู้ช่วยครูภูมิศาสตร์</span>
+                        </div>
+                        <p class="text-xs text-slate-300">ชวนคิด ชวนถามวิพากษ์ และอธิบายฟิสิกส์ภูมิศาสตร์ของมลพิษทางอากาศ</p>
+                    </div>
+                </div>
+
+                <button onclick="clearChat()" class="text-slate-300 hover:text-white text-xs bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition flex items-center space-x-1">
+                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                    <span>เริ่มคุยใหม่</span>
+                </button>
+            </div>
+
+            <!-- Quick Suggestion Starter Buttons -->
+            <div class="px-4 py-3 bg-slate-50 border-b border-slate-200 overflow-x-auto flex space-x-2 custom-scrollbar text-xs">
+                <span class="text-slate-400 py-1.5 flex items-center font-medium shrink-0"><i data-lucide="lightbulb" class="w-3.5 h-3.5 mr-1 text-amber-500"></i> ตัวอย่างคำถาม:</span>
+                <button onclick="sendQuickPrompt('ช่วยอธิบายปรากฏการณ์ Temperature Inversion ที่ทำให้อากาศนิ่งในเชียงใหม่')" class="shrink-0 bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 border border-slate-200 rounded-full px-3 py-1 font-medium transition">
+                    🌬️ Temperature Inversion คืออะไร?
+                </button>
+                <button onclick="sendQuickPrompt('ทำไมปัญหา PM2.5 ในกทม. กับ ภาคเหนือ ถึงมีสาเหตุทางภูมิศาสตร์ต่างกัน')" class="shrink-0 bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 border border-slate-200 rounded-full px-3 py-1 font-medium transition">
+                    🏙️ กทม. vs ภาคเหนือ ต่างกันอย่างไร?
+                </button>
+                <button onclick="sendQuickPrompt('ชวนคิดวิพากษ์: ใครรับภาระทางเศรษฐกิจมากที่สุดจากฝุ่น PM2.5')" class="shrink-0 bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 border border-slate-200 rounded-full px-3 py-1 font-medium transition">
+                    ⚖️ ความเหลื่อมล้ำกับมลพิษฝุ่น
+                </button>
+                <button onclick="sendQuickPrompt('บทเรียนจาก Great Smog of London 1952 นำมาแก้ปัญหาไทยได้อย่างไร')" class="shrink-0 bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 border border-slate-200 rounded-full px-3 py-1 font-medium transition">
+                    📜 บทเรียนจากถ่านหินลอนดอน
+                </button>
+            </div>
+
+            <!-- Chat Message Container -->
+            <div id="chat-box" class="flex-grow p-4 sm:p-6 overflow-y-auto space-y-4 custom-scrollbar bg-slate-50/50">
+                <!-- Welcome Bot Message -->
+                <div class="flex items-start space-x-3 max-w-2xl">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 mt-1">
+                        <i data-lucide="bot" class="w-4 h-4"></i>
+                    </div>
+                    <div class="bg-white border border-slate-200 p-4 rounded-2xl rounded-tl-none shadow-sm text-slate-800 text-sm leading-relaxed space-y-2">
+                        <p class="font-semibold text-emerald-700">สวัสดีครับนักเรียน! ครูชื่อ Eco bot 🌿</p>
+                        <p>ครูพร้อมช่วยตั้งคำถาม อธิบายมิติภูมิศาสตร์ สภาพอากาศ และชวนคิดวิพากษ์เกี่ยวกับวิกฤตมลพิษฝุ่น PM2.5 ทั้งในไทยและต่างประเทศครับ</p>
+                        <p class="text-xs text-slate-500 italic border-t border-slate-100 pt-2">ลองกดปุ่มตัวอย่างด้านบน หรือพิมพ์คำถามที่สงสัยเข้ามาได้เลย!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Input Area -->
+            <div class="p-4 bg-white border-t border-slate-200">
+                <form id="chat-form" onsubmit="handleChatSubmit(event)" class="flex items-center space-x-2">
+                    <input type="text" id="chat-input" placeholder="พิมพ์คำถาม หรือข้อสงสัยเกี่ยวกับสิ่งแวดล้อมที่นี่..." class="flex-grow bg-slate-100 focus:bg-white text-slate-900 border border-slate-200 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-sm rounded-xl px-4 py-3 transition">
+                    <button type="submit" id="send-btn" class="bg-emerald-600 hover:bg-emerald-700 text-white p-3 rounded-xl transition shadow-md flex items-center justify-center shrink-0">
+                        <i data-lucide="send" class="w-5 h-5"></i>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- CASE STUDY DETAIL MODAL -->
+    <div id="case-modal" class="fixed inset-0 z-50 hidden bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-3xl w-full max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-slate-200 animate-scaleUp">
+            <!-- Modal Header -->
+            <div id="modal-header" class="relative p-6 sm:p-8 text-white bg-slate-900 bg-cover bg-center">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent"></div>
+                <button onclick="closeCaseModal()" class="absolute top-4 right-4 text-white/80 hover:text-white bg-black/40 p-2 rounded-full backdrop-blur z-20">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+                <div class="relative z-10 space-y-2">
+                    <span id="modal-badge" class="bg-emerald-500 text-slate-950 text-xs font-bold px-3 py-1 rounded-full"></span>
+                    <h2 id="modal-title" class="text-2xl sm:text-3xl font-extrabold text-white"></h2>
+                    <p id="modal-location" class="text-slate-300 text-sm flex items-center">
+                        <i data-lucide="map-pin" class="w-4 h-4 mr-1 text-emerald-400"></i>
+                        <span></span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Modal Content Body -->
+            <div class="p-6 sm:p-8 overflow-y-auto custom-scrollbar space-y-6 text-slate-700">
+                <!-- Geo & Cause Section -->
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-700 mb-2 flex items-center">
+                        <i data-lucide="compass" class="w-4 h-4 mr-1"></i> บริบททางภูมิศาสตร์ & ปัจจัยการเกิด
+                    </h4>
+                    <p id="modal-geo" class="text-sm sm:text-base leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-100 text-slate-800"></p>
+                </div>
+
+                <!-- Impacts -->
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-rose-700 mb-2 flex items-center">
+                        <i data-lucide="alert-triangle" class="w-4 h-4 mr-1"></i> ผลกระทบทางสิ่งแวดล้อม สุขภาพ และเศรษฐกิจ
+                    </h4>
+                    <p id="modal-impact" class="text-sm sm:text-base leading-relaxed text-slate-700"></p>
+                </div>
+
+                <!-- Critical Reflection Questions -->
+                <div class="bg-emerald-50/70 p-5 rounded-2xl border border-emerald-200 space-y-3">
+                    <h4 class="text-sm font-bold text-emerald-900 flex items-center">
+                        <i data-lucide="help-circle" class="w-4 h-4 mr-2 text-emerald-600"></i>
+                        คำถามชวนคิดวิพากษ์สำหรับชั้นเรียน (Critical Thinking Questions)
+                    </h4>
+                    <ul id="modal-questions" class="space-y-2 text-sm text-emerald-950 list-disc list-inside">
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-end">
+                <button onclick="closeCaseModal()" class="bg-slate-900 hover:bg-slate-800 text-white font-medium px-5 py-2.5 rounded-xl text-sm transition">
+                    ปิดหน้าต่าง
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Data & Logic -->
+    <script>
+        // Database of Case Studies
+        const caseStudiesData = [
+            {
+                id: 'chiangmai',
+                title: 'วิกฤต PM2.5 ภาคเหนือ & แอ่งกระทะเชียงใหม่',
+                region: 'thailand',
+                era: 'modern',
+                location: 'เชียงใหม่และจังหวัดในภาคเหนือตอนบน, ประเทศไทย',
+                timeframe: 'กุมภาพันธ์ - เมษายน (เป็นประจำทุกปี)',
+                image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80',
+                shortDesc: 'ภูมิประเทศแบบแอ่งกระทะล้อมด้วยเทือกเขาสูง ผสมกับปรากฏการณ์ลักขณาอากาศและการเผาป่า-เกษตรกรรม',
+                geoContext: 'ภูมิประเทศของภาคเหนือตอนบนเป็นแอ่งกระทะ (Intermontane Basin) ที่มีเทือกเขาสูงโอบล้อม ในช่วงฤดูหนาวต่อฤดูร้อน อากาศเย็นและแห้งจะจมตัวลงเกิดปรากฏการณ์ Temperature Inversion (ลักขณาอากาศ) เหมือนมีฝาชีแก้วครอบเมืองไว้ มลพิษจากการเผาเศษวัสดุการเกษตร (ข้าวโพดเลี้ยงสัตว์) การเผาป่าเพื่อหาของป่า และไฟป่าข้ามแดน จึงสะสมอยู่ในระดับพื้นดินไม่สามารถลอยตัวระบายออกไปได้',
+                impact: 'ค่า PM2.5 พุ่งสูงติดอันดับ 1 ของโลกในบางวัน ส่งผลกระทบต่อโรคมะเร็งปอด โรคระบบทางเดินหายใจ ทำลายเศรษฐกิจการท่องเที่ยวอย่างหนัก และสร้างความเหลื่อมล้ำทางสุขภาพระหว่างผู้ที่ซื้อเครื่องฟอกอากาศได้กับประชาชนกลุ่ม vulnerable',
+                questions: [
+                    'การปลูกพืชเชิงเดี่ยวในพื้นที่สูงสอดคล้องกับห่วงโซ่อุปทานอาหารระดับโลกอย่างไร?',
+                    'ทำไมมาตรการ "ห้ามเผาเด็ดขาด (Zero Burning)" จึงอาจไม่ยุติธรรมต่อวิถีชีวิตเกษตรกรรายย่อย?',
+                    'เราจะสร้างกลไกความร่วมมือข้ามแดน (ASEAN Agreement) ที่บังคับใช้ได้จริงอย่างไร?'
+                ]
+            },
+            {
+                id: 'bangkok',
+                title: 'วิกฤต PM2.5 เมืองหลวง: กรุงเทพมหานคร',
+                region: 'thailand',
+                era: 'modern',
+                location: 'กรุงเทพมหานครและปริมณฑล, ประเทศไทย',
+                timeframe: 'ธันวาคม - กุมภาพันธ์ (ฤดูหนาว)',
+                image: 'https://images.unsplash.com/photo-1508873696983-2df515122519?auto=format&fit=crop&w=800&q=80',
+                shortDesc: 'การจราจรหนาแน่น ผังเมืองตึกสูงขวางทางลม และสภาพอากาศปิดช่วงฤดูหนาว',
+                geoContext: 'แม้กรุงเทพฯ จะเป็นพื้นที่ราบลุ่มใกล้ชายฝั่งทะเล แต่ช่วงฤดูหนาวจะได้รับอิทธิพลจากความกดอากาศสูงจากจีน ทำให้อากาศนิ่ง ลมสงบ ปรากฏการณ์ตึกสูงแน่นขนัด (Urban Canyon Effect) ขวางกั้นการหมุนเวียนของลม เมื่อรวมกับแหล่งกำเนิดมลพิษหลักคือเครื่องยนต์ดีเซลของการจราจร โรงงานอุตสาหกรรม และการเผาชีวมณฑลจากจังหวัดรอบข้าง ทำให้ PM2.5 สะสมตัวสูง',
+                impact: 'กระทบต่อสุขภาพของประชาชนกว่า 10 ล้านคน เกิดสภาวะหมอกควันสลัวครอบคลุมเมือง โรงเรียนต้องสั่งปิดการเรียนการสอนชั่วคราว',
+                questions: [
+                    'ผังเมืองและการส่งเสริมขนส่งสาธารณะช่วยลดฝุ่นได้อย่างยั่งยืนกว่าการฉีดพ่นน้ำอย่างไร?',
+                    'กลุ่มคนทำงานกลางแจ้ง (มอเตอร์ไซค์รับจ้าง, คนเก็บขยะ) รับภาระความเสี่ยงทางสุขภาพต่างจากคนทำงานออฟฟิศอย่างไร?'
+                ]
+            },
+            {
+                id: 'london1952',
+                title: 'The Great Smog of London 1952',
+                region: 'global',
+                era: 'historical',
+                location: 'กรุงลอนดอน, สหราชอาณาจักร',
+                timeframe: '5 - 9 ธันวาคม ค.ศ. 1952',
+                image: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=800&q=80',
+                shortDesc: 'วิกฤตหมอกควันถ่านหินครั้งประวัติศาสตร์ นำไปสู่กฎหมายอากาศสะอาด (Clean Air Act)',
+                geoContext: 'เกิดสภาวะความกดอากาศสูงแอนติไซโคลน (Anticyclone) อากาศเย็นจัดจมตัวกักเก็บมลพิษจากการเผาถ่านหินเพื่อทำความร้อนในครัวเรือน โรงไฟฟ้าถ่านหิน และการรถไฟ มลพิษละอองซัลเฟอร์ไดออกไซด์ (SO2) ละลายรวมกับหยดน้ำในหมอก กลายเป็นกรดซัลฟิวริกเข้มข้นครอบคลุมทั่วเมือง',
+                impact: 'มีผู้เสียชีวิตทันทีและในเวลาต่อมากว่า 12,000 คน สัตว์เลี้ยงและปศุสัตว์ตายจำนวนมาก เหตุการณ์นี้กลายเป็นจุดเปลี่ยนทางประวัติศาสตร์ที่ทำให้รัฐบาลตรากฎหมาย Clean Air Act 1956 เพื่อปฏิรูปการใช้พลังงาน',
+                questions: [
+                    'เหตุการณ์นี้เปลี่ยนมุมมองของสังคมต่อคำว่า "ความก้าวหน้าทางอุตสาหกรรม" อย่างไร?',
+                    'บทเรียนการผ่านกฎหมายอากาศสะอาดในลอนดอนเมื่อ 70 ปีก่อน สะท้อนอะไรถึง พ.ร.บ. อากาศสะอาดของไทยในปัจจุบัน?'
+                ]
+            },
+            {
+                id: 'donora1948',
+                title: 'Donora Zinc Smog 1948',
+                region: 'global',
+                era: 'historical',
+                location: 'เมืองโดโนรา รัฐเพนซิลเวเนีย, สหรัฐอเมริกา',
+                timeframe: 'ตุลาคม ค.ศ. 1948',
+                image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80',
+                shortDesc: 'มลพิษจากโรงงานถลุงสังกะสีขังในหุบเขาแม่น้ำ นำไปสู่จุดเริ่มต้นวิทยาศาสตร์สิ่งแวดล้อม',
+                geoContext: 'เมืองโดโนราตั้งอยู่ในหุบเขาตามแนวน้ำ Monongahela River ซึ่งมีลักษณะภูมิประเทศแบบแม่น้ำกั้นด้วยเนินเขาสูง เมื่อเกิดปรากฏการณ์ Temperature Inversion หมอกควันพิษจากโรงงานถลุงสังกะสีและเหล็กกล้าจึงไม่สามารถระบายออกจากหุบเขาได้นานนับสัปดาห์',
+                impact: 'มีผู้เสียชีวิต 20 รายและประชาชนกว่าครึ่งเมือง (ราว 7,000 คน) ป่วยเรื้อรัง เป็นจุดเริ่มต้นสำคัญที่ทำให้สหรัฐฯ หันมารควบควบคุมมลพิษทางอากาศระดับชาติ',
+                questions: [
+                    'ภูมิศาสตร์ลักษณะ "หุบเขา" มีส่วนเพิ่มความรุนแรงของมลพิษทางอุตสาหกรรมอย่างไร?',
+                    'ความขัดแย้งระหว่าง "การเติบโตทางเศรษฐกิจและผลกำไรของโรงงาน" กับ "สุขภาพของคนในชุมชน" แก้ไขอย่างไร?'
+                ]
+            },
+            {
+                id: 'aseanhaze',
+                title: 'วิกฤตหมอกควันข้ามแดนอาเซียน (Southeast Asian Haze)',
+                region: 'global',
+                era: 'modern',
+                location: 'อินโดนีเซีย, สิงคโปร์, มาเลเซีย และภาคใต้ของไทย',
+                timeframe: 'ค.ศ. 1997 และเกิดขึ้นเป็นระยะช่วงฤดูแล้ง',
+                image: 'https://images.unsplash.com/photo-1516214104703-d870798883c5?auto=format&fit=crop&w=800&q=80',
+                shortDesc: 'การเผาป่าพรุเพื่อทำสวนปาล์มน้ำมัน พัดพาหมอกควันข้ามพรมแดนหลายประเทศ',
+                geoContext: 'การเตรียมพื้นที่เกษตรกรรมขนาดใหญ่ (สวนปาล์มและกระดาษ) บนชั้นดินพรุ (Peatland) ในเกาะสุมาตราและกาลิมันตัน ประเทศอินโดนีเซีย ไฟป่าใต้ดินในป่าพรุดับได้ยากมาก ลมมรสุมตะวันออกเฉียงใต้พัดพาละอองฝุ่นและหมอกควันกระจายข้ามแดนไปยังสิงคโปร์ มาเลเซีย และภาคใต้ของไทย',
+                impact: 'กระทบต่อระบบการบิน สุขภาพประชาชนนับล้านคน สูญเสียมูลค่าทางเศรษฐกิจหลายพันล้านดอลลาร์ เกิดข้อตกลง ASEAN Agreement on Transboundary Haze Pollution',
+                questions: [
+                    'มลพิษไม่มีพรมแดนทางกายภาพ (Borderless Pollution) ท้าทายอธิปไตยทางกฎหมายของแต่ละประเทศอย่างไร?',
+                    'ผู้บริโภคในเมืองมีส่วนร่วมต่อการเกิดไฟป่าพรุผ่านการบริโภคผลิตภัณฑ์ปาล์มน้ำมันอย่างไร?'
+                ]
+            }
+        ];
+
+        // Critical Thinking Framework Content Data
+        const frameworkData = {
+            1: {
+                title: 'มิติที่ 1: การตั้งคำถาม & ท้าทายความเชื่อ (Questioning Assumptions)',
+                subtitle: 'ฝึกทักษะไม่ยอมรับคำอธิบายแบบสำเร็จรูป และตั้งคำถามวิพากษ์ต่อมายาคติต่างๆ',
+                description: 'บ่อยครั้งเรื่องมลพิษมักถูกอธิบายอย่างง่าย เช่น "ฝุ่นเกิดจากชาวบ้านเผาป่าเพียงอย่างเดียว" หรือ "เป็นเรื่องของธรรมชาติที่แก้ไม่ได้" การคิดวิพากษ์เริ่มต้นจากการสงสัยและรื้อถอนข้อสมมติฐานเหล่านี้',
+                starterQuestions: [
+                    'ใครคือผู้กำหนดนิยามว่า "ใครคือผู้ก่อมลพิษ" ในสื่อหลัก?',
+                    'ทำไมวาทกรรมเรื่อง PM2.5 จึงมักโทษวิถีชีวิตของเกษตรกรรายย่อย มากกว่าห่วงโซ่อุปทานเกษตรพันธสัญญา?',
+                    'ข้อมูลค่ามาตรฐาน AQI ที่ใช้อยู่ในปัจจุบัน สะท้อนความเสี่ยงต่อสุขภาพของกลุ่มเปราะบางจริงหรือไม่?'
+                ],
+                exercise: 'ให้นักเรียนเลือก 1 ข่าวเกี่ยวกับ PM2.5 แล้วแยกแยะว่าส่วนใดคือ "ข้อเท็จจริงทางวิทยาศาสตร์" และส่วนใดคือ "ข้อสันนิษฐาน/มุมมองทางการเมือง"'
+            },
+            2: {
+                title: 'มิติที่ 2: การวิเคราะห์รากเหง้าเชิงระบบ (Root Cause Analysis)',
+                subtitle: 'มองทะลุอาการป่วยของสิ่งแวดล้อม ไปสู่โครงสร้างเศรษฐกิจ สังคม และสภาพอากาศ',
+                description: 'ฝุ่น PM2.5 ไม่ใช่แค่ปัญหาทางเคมีในอากาศ แต่เป็นผลลัพธ์สุดท้าย (End Product) ของระบบเศรษฐกิจ ผังเมือง การขนส่ง และภูมิอากาศวิทยา',
+                starterQuestions: [
+                    'โครงสร้างผังเมืองกรุงเทพฯ ที่เน้นตัดถนนเพื่อรถยนต์ส่วนบุคคล สัมพันธ์กับการสะสมของ PM2.5 อย่างไร?',
+                    'นโยบายส่งเสริมพืชพลังงานและอาหารสัตว์ สัมพันธ์กับการเปลี่ยนพื้นที่ป่าเป็นแปลงเกษตรอย่างไร?',
+                    'ปัจจัยสภาพอากาศนิ่ง (Atmospheric Stagnation) ทำหน้าที่เป็น "ตัวคูณรุนแรง" ของแหล่งกำเนิดมลพิษอย่างไร?'
+                ],
+                exercise: 'วาดแผนผังสาเหตุและผลกระทบ (Mind Map / Iceberg Model) เพื่อแสดงความเชื่อมโยงระหว่างพฤติกรรมการบริโภคกับฝุ่นควัน'
+            },
+            3: {
+                title: 'มิติที่ 3: การคิดเชิงพื้นที่ & มลพิษข้ามแดน (Spatial Analysis & Transboundary)',
+                subtitle: 'วิเคราะห์การเคลื่อนที่ของมลพิษผ่านมุมมองภูมิศาสตร์และแผนที่',
+                description: 'กระแสลม ความกดอากาศ และลักษณะภูมิประเทศ ไม่รู้จักพรมแดนทางการเมือง ปัญหาสิ่งแวดล้อมจึงต้องการการมองผ่านมิติเชิงพื้นที่ (Spatial Perspective)',
+                starterQuestions: [
+                    'ทิศทางลมมรสุมส่งผลต่อการแพร่กระจายของฝุ่นข้ามแดนในภูมิภาคอาเซียนอย่างไร?',
+                    'เหตุใดภูมิประเทศแบบ "แอ่งกระทะ" จึงกลายเป็นกับดักมลพิษธรรมชาติ?',
+                    'เราจะใช้ข้อมูลภาพถ่ายดาวเทียม (Satellite Thermal Hotspots) ในการวิเคราะห์การกระจายตัวของจุดความร้อนได้อย่างไร?'
+                ],
+                exercise: 'ซ้อนทับแผนที่จุดความร้อน (Hotspots) กับแผนที่ทิศทางลมเพื่อวิเคราะห์เส้นทางการเคลื่อนที่ของหมอกควัน'
+            },
+            4: {
+                title: 'มิติที่ 4: การประเมินทางออก & ผลกระทบสืบเนื่อง (Solution & Trade-offs)',
+                subtitle: 'วิพากษ์นโยบายแก้ปัญหา ไม่มีทางออกใดที่ไร้ผลกระทบสะท้อนกลับ',
+                description: 'ทุกนโยบายการแก้ปัญหาสิ่งแวดล้อมมีต้นทุนและผู้ได้-ผู้เสียประโยชน์ การคิดวิพากษ์ช่วยให้ประเมินความยั่งยืนและความยุติธรรมอย่างรอบด้าน',
+                starterQuestions: [
+                    'มาตรการห้ามเผาป่าเด็ดขาด กระทบต่อความมั่นคงทางอาหารและรายได้ของชุมชนชาติพันธุ์อย่างไร?',
+                    'การแจกหน้ากาก N95 และเครื่องฟอกอากาศ แก้ไขปัญหาที่รากเหง้า หรือสร้างความเหลื่อมล้ำเพิ่มขึ้น?',
+                    'นโยบายภาษีคาร์บอนและกฎหมายความรับผิดชอบของห่วงโซ่อุปทาน (Supply Chain Accountability) จะช่วยแก้ปัญหามลพิษข้ามแดนได้อย่างไร?'
+                ],
+                exercise: 'จัดกิจกรรมสวมบทบาท (Role-play) เป็น เกษตรกร, เจ้าของธุรกิจเกษตร, ประชาชนในเมือง และผู้กำหนดนโยบาย เพื่อถกเถียงหาทางออกร่วมกัน'
+            }
+        };
+
+        // Initialize Lucide Icons
+        document.addEventListener("DOMContentLoaded", () => {
+            lucide.createIcons();
+            renderCasesGrid(caseStudiesData);
+            selectFramework(1);
+            setupMobileMenu();
+        });
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            const tabs = ['overview', 'cases', 'critical', 'chatbot'];
+            tabs.forEach(id => {
+                const element = document.getElementById(`tab-${id}`);
+                const navBtn = document.getElementById(`nav-${id}`);
+
+                if (id === tabId) {
+                    element.classList.remove('hidden');
+                    if (navBtn) {
+                        navBtn.classList.add('bg-emerald-600', 'text-white', 'shadow-md');
+                        navBtn.classList.remove('text-slate-600', 'hover:bg-slate-100');
+                    }
+                } else {
+                    element.classList.add('hidden');
+                    if (navBtn) {
+                        navBtn.classList.remove('bg-emerald-600', 'text-white', 'shadow-md');
+                        navBtn.classList.add('text-slate-600', 'hover:bg-slate-100');
+                    }
+                }
+            });
+
+            // Re-render icons for newly visible DOM elements
+            lucide.createIcons();
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            // Close mobile menu if open
+            document.getElementById('mobile-menu').classList.add('hidden');
+        }
+
+        // Mobile Menu Setup
+        function setupMobileMenu() {
+            const btn = document.getElementById('mobile-menu-btn');
+            const menu = document.getElementById('mobile-menu');
+            btn.addEventListener('click', () => {
+                menu.classList.toggle('hidden');
+            });
+        }
+
+        // Case Studies Rendering & Filtering
+        function renderCasesGrid(data) {
+            const container = document.getElementById('cases-grid');
+            container.innerHTML = '';
+
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group';
+                
+                const isThailand = item.region === 'thailand';
+                const tagColor = isThailand ? 'bg-emerald-500 text-slate-950' : 'bg-teal-700 text-white';
+                const regionLabel = isThailand ? '🇹🇭 ประเทศไทย' : '🌐 ต่างประเทศ';
+
+                card.innerHTML = `
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+                        <div class="absolute top-3 left-3 flex flex-wrap gap-2">
+                            <span class="${tagColor} text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">${regionLabel}</span>
+                            <span class="bg-black/40 backdrop-blur text-white text-xs px-2.5 py-1 rounded-full border border-white/20">${item.era === 'historical' ? 'บทเรียนอดีต' : 'ปัจจุบัน'}</span>
+                        </div>
+                        <h3 class="absolute bottom-3 left-4 right-4 text-lg font-bold text-white leading-snug line-clamp-1">${item.title}</h3>
+                    </div>
+                    <div class="p-5 flex-grow flex flex-col justify-between space-y-4">
+                        <div class="space-y-2">
+                            <p class="text-xs text-slate-500 flex items-center">
+                                <i data-lucide="map-pin" class="w-3.5 h-3.5 mr-1 text-emerald-600"></i> ${item.location}
+                            </p>
+                            <p class="text-sm text-slate-600 line-clamp-3 leading-relaxed">${item.shortDesc}</p>
+                        </div>
+                        <button onclick="openCaseModal('${item.id}')" class="w-full bg-slate-100 hover:bg-emerald-600 hover:text-white text-slate-800 text-sm font-semibold py-2.5 rounded-xl transition flex items-center justify-center space-x-2">
+                            <span>เจาะลึกมิติภูมิศาสตร์</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            lucide.createIcons();
+        }
+
+        function filterCases(category) {
+            // Update filter button styling
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('bg-emerald-600', 'text-white');
+                btn.classList.add('bg-slate-100', 'text-slate-700');
+            });
+
+            event.target.classList.remove('bg-slate-100', 'text-slate-700');
+            event.target.classList.add('bg-emerald-600', 'text-white');
+
+            if (category === 'all') {
+                renderCasesGrid(caseStudiesData);
+            } else if (category === 'thailand' || category === 'global') {
+                const filtered = caseStudiesData.filter(c => c.region === category);
+                renderCasesGrid(filtered);
+            } else if (category === 'historical' || category === 'modern') {
+                const filtered = caseStudiesData.filter(c => c.era === category);
+                renderCasesGrid(filtered);
+            }
+        }
+
+        // Case Modal Control
+        function openCaseModal(id) {
+            const item = caseStudiesData.find(c => c.id === id);
+            if (!item) return;
+
+            document.getElementById('modal-header').style.backgroundImage = `url('${item.image}')`;
+            document.getElementById('modal-badge').innerText = item.region === 'thailand' ? 'ประเทศไทย' : 'ต่างประเทศ';
+            document.getElementById('modal-title').innerText = item.title;
+            document.getElementById('modal-location').querySelector('span').innerText = `${item.location} (${item.timeframe})`;
+            document.getElementById('modal-geo').innerText = item.geoContext;
+            document.getElementById('modal-impact').innerText = item.impact;
+
+            const qList = document.getElementById('modal-questions');
+            qList.innerHTML = '';
+            item.questions.forEach(q => {
+                const li = document.createElement('li');
+                li.innerText = q;
+                qList.appendChild(li);
+            });
+
+            document.getElementById('case-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeCaseModal() {
+            document.getElementById('case-modal').classList.add('hidden');
+        }
+
+        // Critical Framework Tab Switcher
+        function selectFramework(id) {
+            // Update UI buttons
+            for (let i = 1; i <= 4; i++) {
+                const btn = document.getElementById(`fw-btn-${i}`);
+                if (i === id) {
+                    btn.className = 'fw-btn w-full text-left p-4 rounded-2xl border transition flex items-center space-x-3 bg-emerald-50 border-emerald-500 text-emerald-900 font-semibold shadow-sm';
+                    btn.querySelector('span:first-child').className = 'w-7 h-7 rounded-full bg-emerald-600 text-white text-xs flex items-center justify-center font-bold';
+                } else {
+                    btn.className = 'fw-btn w-full text-left p-4 rounded-2xl border border-slate-200 hover:border-slate-300 text-slate-700 transition flex items-center space-x-3 font-medium';
+                    btn.querySelector('span:first-child').className = 'w-7 h-7 rounded-full bg-slate-200 text-slate-700 text-xs flex items-center justify-center font-bold';
+                }
+            }
+
+            const data = frameworkData[id];
+            const content = document.getElementById('framework-content');
+
+            let qHtml = data.starterQuestions.map((q, idx) => `
+                <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200/80 flex items-start space-x-3">
+                    <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-700 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">${idx + 1}</span>
+                    <p class="text-sm font-medium text-slate-800 leading-relaxed">${q}</p>
+                </div>
+            `).join('');
+
+            content.innerHTML = `
+                <div class="space-y-4">
+                    <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Framework Phase ${id}</span>
+                    <h3 class="text-xl sm:text-2xl font-bold text-slate-900">${data.title}</h3>
+                    <p class="text-emerald-700 font-medium text-sm">${data.subtitle}</p>
+                    <p class="text-slate-600 text-sm leading-relaxed">${data.description}</p>
+                </div>
+
+                <div class="space-y-3 pt-2">
+                    <h4 class="text-sm font-bold text-slate-900 flex items-center">
+                        <i data-lucide="help-circle" class="w-4 h-4 mr-2 text-amber-500"></i>
+                        ชุดคำถามนำทางความคิด (Guiding Critical Questions)
+                    </h4>
+                    <div class="grid grid-cols-1 gap-3">
+                        ${qHtml}
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-emerald-900 to-teal-900 text-white p-5 rounded-2xl space-y-3 shadow-md">
+                    <h4 class="text-sm font-bold flex items-center text-emerald-300">
+                        <i data-lucide="pen-tool" class="w-4 h-4 mr-2"></i>
+                        ใบงานกิจกรรมเสนอแนะสำหรับห้องเรียน
+                    </h4>
+                    <p class="text-sm text-slate-200 leading-relaxed">${data.exercise}</p>
+                    <div class="pt-2">
+                        <textarea placeholder="บันทึกความคิดเห็นหรือคำตอบของคุณลงในกล่องนี้เพื่อใช้สะท้อนความคิด (Self-Reflection)..." class="w-full bg-slate-800/80 text-white text-sm p-3 rounded-xl border border-slate-700 focus:outline-none focus:border-emerald-400 h-24 custom-scrollbar"></textarea>
+                    </div>
+                </div>
+            `;
+
+            lucide.createIcons();
+        }
+
+        // =========================================================
+        // ECO BOT AI CHATBOT SYSTEM LOGIC
+        // =========================================================
+        let chatHistory = [];
+
+        async function handleChatSubmit(e) {
+            e.preventDefault();
+            const inputEl = document.getElementById('chat-input');
+            const prompt = inputEl.value.trim();
+            if (!prompt) return;
+
+            // Clear input
+            inputEl.value = '';
+
+            // Render User Message
+            appendMessage('user', prompt);
+
+            // Show Thinking Indicator
+            const loadingId = appendLoading();
+
+            try {
+                // Call Gemini API (gemini-3-flash-preview)
+                const botResponse = await fetchGeminiResponse(prompt);
+                removeLoading(loadingId);
+                appendMessage('bot', botResponse);
+            } catch (error) {
+                console.error(error);
+                removeLoading(loadingId);
+                // Fallback smart knowledge response if API call fails or offline
+                const fallbackText = getSmartFallbackResponse(prompt);
+                appendMessage('bot', fallbackText);
+            }
+        }
+
+        function sendQuickPrompt(text) {
+            document.getElementById('chat-input').value = text;
+            handleChatSubmit(new Event('submit'));
+        }
+
+        function appendMessage(sender, text) {
+            const chatBox = document.getElementById('chat-box');
+            const msgDiv = document.createElement('div');
+
+            if (sender === 'user') {
+                msgDiv.className = 'flex items-start justify-end space-x-3 max-w-2xl ml-auto';
+                msgDiv.innerHTML = `
+                    <div class="bg-emerald-600 text-white p-4 rounded-2xl rounded-tr-none shadow-sm text-sm leading-relaxed">
+                        <p>${escapeHtml(text)}</p>
+                    </div>
+                    <div class="w-8 h-8 rounded-xl bg-slate-800 text-white flex items-center justify-center shrink-0 mt-1 font-bold text-xs">
+                        คุณ
+                    </div>
+                `;
+            } else {
+                msgDiv.className = 'flex items-start space-x-3 max-w-2xl';
+                msgDiv.innerHTML = `
+                    <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 mt-1">
+                        <i data-lucide="bot" class="w-4 h-4"></i>
+                    </div>
+                    <div class="bg-white border border-slate-200 p-4 rounded-2xl rounded-tl-none shadow-sm text-slate-800 text-sm leading-relaxed space-y-2">
+                        <span class="text-xs font-bold text-emerald-600">Eco bot</span>
+                        <div class="space-y-2 text-slate-700">${formatBotResponse(text)}</div>
+                    </div>
+                `;
+            }
+
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+            lucide.createIcons();
+        }
+
+        function appendLoading() {
+            const chatBox = document.getElementById('chat-box');
+            const id = 'loading-' + Date.now();
+            const msgDiv = document.createElement('div');
+            msgDiv.id = id;
+            msgDiv.className = 'flex items-start space-x-3 max-w-xl';
+            msgDiv.innerHTML = `
+                <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 mt-1">
+                    <i data-lucide="bot" class="w-4 h-4"></i>
+                </div>
+                <div class="bg-white border border-slate-200 p-4 rounded-2xl rounded-tl-none shadow-sm text-slate-500 text-xs flex items-center space-x-2">
+                    <span class="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></span>
+                    <span>Eco bot กำลังประมวลผลข้อมูลภูมิศาสตร์และความคิดวิพากษ์...</span>
+                </div>
+            `;
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+            lucide.createIcons();
+            return id;
+        }
+
+        function removeLoading(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+
+        function clearChat() {
+            document.getElementById('chat-box').innerHTML = `
+                <div class="flex items-start space-x-3 max-w-2xl">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 mt-1">
+                        <i data-lucide="bot" class="w-4 h-4"></i>
+                    </div>
+                    <div class="bg-white border border-slate-200 p-4 rounded-2xl rounded-tl-none shadow-sm text-slate-800 text-sm leading-relaxed space-y-2">
+                        <p class="font-semibold text-emerald-700">สวัสดีครับนักเรียน! ครูชื่อ Eco bot 🌿</p>
+                        <p>เริ่มต้นการสนทนาใหม่แล้วครับ มีประเด็นมลพิษ หรือกรณีศึกษาไหนอยากให้ครูช่วยอธิบายเพิ่มเติมไหมครับ?</p>
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        // Gemini API Call Function
+        async function fetchGeminiResponse(userQuery) {
+            const systemPrompt = `
+                คุณคือ "Eco bot" คุณครูผู้ช่วยสอนในรายวิชาภูมิศาสตร์และสิ่งแวดล้อมศึกษา 
+                มีบุคลิกเป็นกันเอง กระตือรือร้น ชอบใช้กระบวนการตั้งคำถามแบบโสเครติส (Socratic Method) ชวนนักเรียนคิดวิพากษ์ (Critical Thinking)
+                เชี่ยวชาญเรื่อง:
+                1. ฟิสิกส์ภูมิศาสตร์ ปรากฏการณ์ลักขณาอากาศ (Temperature Inversion), ผังเมือง, แอ่งกระทะ, ลมมรสุม
+                2. วิกฤต PM2.5 ในไทย (ภาคเหนือ, กทม.) และต่างประเทศ (Great Smog 1952, Donora 1948, หมอกควันอาเซียน)
+                3. ความยุติธรรมทางสิ่งแวดล้อม (Environmental Justice), ความเหลื่อมล้ำ, นโยบายและข้อตกลงข้ามแดน
+
+                คำแนะนำในการตอบ:
+                - อธิบายสั้น กระชับ เข้าใจง่าย มีโครงสร้างหัวข้อชัดเจน
+                - ตบท้ายด้วย "คำถามชวนคิดวิพากษ์" 1 ข้อเสมอ เพื่อกระตุ้นให้นักเรียนคิดต่อ
+                - ตอบเป็นภาษาไทย
+            `;
+
+            const apiKey = ""; // Canvas runtime environment automatically replaces empty key
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                }
+            };
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error("API Network Response standard error");
+            }
+
+            const data = await response.json();
+            const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (text) return text;
+            throw new Error("Invalid response format");
+        }
+
+        // Offline / Fallback Knowledge Engine
+        function getSmartFallbackResponse(query) {
+            const q = query.toLowerCase();
+
+            if (q.includes('inversion') || q.includes('ลักขณา') || q.includes('ฝาชี')) {
+                return `**ปรากฏการณ์ลักขณาอากาศ (Temperature Inversion) คืออะไร?**\n\nโดยปกติ ยิ่งสูงอากาศยิ่งเย็น และอากาศร้อนด้านล่างจะลอยตัวขึ้นเพื่อระบายมลพิษ แต่ช่วงฤดูหนาว อากาศเย็นจะจมตัวลงต่ำ และมีชั้นอากาศอุ่นทับอยู่ด้านบน เหมือน **"ฝาชีแก้วครอบเมือง"**\n\nพอมลพิษจากควันรถ หรือการเผาเกิดขึ้น มันจึงถูกกักให้อยู่ในระดับลมหายใจเรา ลอยระบายออกไม่ได้ครับ!\n\n💡 **คำถามชวนคิด:** หากภูมิประเทศเป็น "แอ่งกระทะ" ร่วมกับเกิด Inversion ปัญหานี้จะรุนแรงกว่าเมืองชายทะเลอย่างไร?`;
+            }
+            if (q.includes('กทม') || q.includes('กรุงเทพ') || q.includes('ต่างกัน')) {
+                return `**เปรียบเทียบ PM2.5 กรุงเทพฯ vs ภาคเหนือ:**\n\n1. **กรุงเทพฯ:** แหล่งกำเนิดหลักคือ **เครื่องยนต์ดีเซลและการจราจร + โรงงาน** ประกอบกับตึกสูงขวางลม (Urban Canyon) และอากาศนิ่งช่วงฤดูหนาว\n2. **ภาคเหนือ:** แหล่งกำเนิดหลักคือ **การเผาในป่าและพื้นที่เกษตร + หมอกควันข้ามแดน** ประกอบกับ **ภูมิประเทศแอ่งกระทะ** ที่ขังฝุ่นไว้\n\n💡 **คำถามชวนคิด:** นโยบายการแก้ปัญหาฝุ่นของ 2 พื้นที่นี้ ควรใช้วิธีการเดียวกันหรือไม่? เพราะเหตุใด?`;
+            }
+            if (q.includes('เศรษฐกิจ') || q.includes('เหลื่อมล้ำ') || q.includes('ใครรับภาระ')) {
+                return `**ความเหลื่อมล้ำทางสังคมกับวิกฤต PM2.5:**\n\nฝุ่น PM2.5 ปะทะทุกคน แต่อิมแพกต์ไม่เท่ากันครับ!\n- **ผู้มีกำลังทรัพย์:** ซื้อเครื่องฟอกอากาศ ติดแอร์ สวมหน้ากาก N95 ทำงานในอาคารปิดได้\n- **กลุ่มเปราะบาง:** มอเตอร์ไซค์รับจ้าง เกษตรกร คนไร้บ้าน พ่อค้าแม่ค้าไรดึง ซึ่งต้องทำงานกลางแจ้ง ไร้เครื่องมือป้องกัน\n\n💡 **คำถามชวนคิด:** คุณคิดว่าอากาศสะอาดควรเป็น "สิทธิขั้นพื้นฐาน (Human Right)" หรือเป็น "สินค้าที่ต้องซื้อ"?`;
+            }
+            
+            return `ขอบคุณสำหรับคำถามครับ! ประเด็นเรื่อง **"${escapeHtml(query)}"** สัมพันธ์กับปัจจัยภูมิศาสตร์ และกิจกรรมของมนุษย์อย่างมากครับ\n\nในการวิเคราะห์เรื่องนี้ เราต้องมอง 3 มิติ:\n1. ปัจจัยธรรมชาติ (ลม ภูมิประเทศ สภาพอากาศ)\n2. ปัจจัยมนุษย์ (ผังเมือง พฤติกรรมบริโภค การเกษตร)\n3. นโยบายและการกำกับดูแลของภาครัฐ\n\n💡 **คำถามชวนคิด:** ในมุมมองของคุณ นักเรียนคิดว่าทางออกที่ยั่งยืนที่สุดของเรื่องนี้คืออะไรครับ?`;
+        }
+
+        // Format helpers
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        function formatBotResponse(text) {
+            let formatted = escapeHtml(text);
+            // bold formatting
+            formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            // line breaks
+            formatted = formatted.replace(/\n/g, '<br>');
+            return formatted;
+        }
+    </script>
+</body>
+</html>
